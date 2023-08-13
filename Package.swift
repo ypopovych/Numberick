@@ -14,7 +14,7 @@ import PackageDescription
 // MARK: * Numberick
 //*============================================================================*
 
-let package = Package(
+var package = Package(
     name: "Numberick",
     platforms: [
         .iOS(.v14),
@@ -80,3 +80,18 @@ let package = Package(
         dependencies: ["NBKDoubleWidthKit"]),
     ]
 )
+
+#if os(Linux) || os(Windows)
+#if swift(>=5.8)
+    package.targets.first{$0.name == "NBKDoubleWidthKit"}!.swiftSettings = [.define("SBI")]
+#endif
+#else
+if #available(iOS 16.4, macCatalyst 16.4, macOS 13.3,
+              tvOS 16.4, watchOS 9.4, *)
+{
+    package.targets.first{$0.name == "NBKDoubleWidthKit"}!.swiftSettings = [.define("SBI")]
+}
+#endif
+
+
+
