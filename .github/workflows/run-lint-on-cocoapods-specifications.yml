@@ -22,12 +22,22 @@ jobs:
         uses: actions/checkout@v3
       - name: Select Xcode ${{ matrix.element.xcode }}
         run: sudo xcode-select --switch /Applications/Xcode_${{ matrix.element.xcode }}.app
+      - name: Lint Numberick-NBKCoreKit.podspec
+        run: |
+          pod lib lint Numberick-NBKCoreKit.podspec \
+            --allow-warnings \
+            --fail-fast
+          echo "SPEC_DEPENDENCIES=Numberick-NBKCoreKit.podspec," >> "$GITHUB_ENV"
+      - name: Lint Numberick-NBKDoubleWidthKit.podspec
+        run: |
+          pod lib lint Numberick-NBKDoubleWidthKit.podspec \
+            --allow-warnings \
+            --fail-fast \
+            --include-podspecs=\{$SPEC_DEPENDENCIES\}
+          echo "SPEC_DEPENDENCIES=${SPEC_DEPENDENCIES}Numberick-NBKDoubleWidthKit.podspec," >> "$GITHUB_ENV"
       - name: Lint Numberick.podspec
         run: |
-          DEPENDENCIES=''
-          DEPENDENCIES+=Numberick-NBKCoreKit.podspec,
-          DEPENDENCIES+=Numberick-NBKDoubleWidthKit.podspec,
-          pod lib lint  Numberick.podspec \
-          --allow-warnings \
-          --fail-fast \
-          --include-podspecs=\{$DEPENDENCIES\}
+          pod lib lint Numberick.podspec \
+            --allow-warnings \
+            --fail-fast \
+            --include-podspecs=\{$SPEC_DEPENDENCIES\}
